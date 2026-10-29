@@ -1,0 +1,77 @@
+extends AnimationPlayer
+
+@export var character_path: ItemPath = ^"../../.."
+
+@onready var character: FPSCharacter = get_item(character_path) as FPSCharacter
+@onready var camera: Camera = get_item("../camera")
+
+func iStart() -> void:
+	set_update(true)
+	_build_animation_library()
+	play("idle")
+
+func Update(delta: float) -> void:
+	_update_neck_animation(delta)
+	_update_movement_animation()
+
+func _build_animation_library() -> void:
+	var library: AnimationLibrary = AnimationLibrary.new()
+	library.add_animation("idle", _create_idle_animation())
+	library.add_animation("walk", _create_step_animation(1.0))
+	library.add_animation("sprint", _create_step_animation(2.0))
+	library.add_animation("jump", _create_jump_animation())
+	add_animation_library("", library)
+
+func _create_idle_animation() -> Animation:
+	var animation: Animation = Animation.new()
+	animation.length = 1.0
+	animation.loop_mode = Animation.LOOP_LINEAR
+	_add_track(animation, ".:position", [0.0, 1.0], [Vector3.ZERO, Vector3.ZERO])
+	return animation
+
+func _create_step_animation(angle_degrees: float) -> Animation:
+	var animation: Animation = Animation.new()
+	animation.length = 1.2
+	animation.loop_mode = Animation.LOOP_LINEAR
+	var times: Array = [0.0, 0.3, 0.6, 0.9, 1.2]
+	_add_track(animation, ".:position", times, [
+		Vector3.ZERO,
+		Vector3(0.0, -0.01, 0.0),
+		Vector3.ZERO,
+		Vector3(0.0, -0.01, 0.0),
+		Vector3.ZERO,
+	])
+	_add_track(animation, ".:rotation", times, [
+		Vector3.ZERO,
+		Vector3(-deg_to_rad(angle_degrees), 0.0, 0.0),
+		Vector3.ZERO,
+		Vector3(-deg_to_rad(angle_degrees), 0.0, 0.0),
+		Vector3.ZERO,
+	])
+	return animation
+
+func _create_jump_animation() -> Animation:
+	var animation: Animation = Animation.new()
+	animation.length = 0.2
+	_add_track(animation, ".:rotation", [0.0], [Vector3(-deg_to_rad(5.0), 0.0, 0.0)])
+	return animation
+
+func _add_track(animation: Animation, path: ItemPath, times: Array, values: Array) -> void:
+	var track: int = animation.add_track(Animation.TYPE_VALUE)
+	animation.track_set_path(track, path)
+	for index: int in times.size():
+		animation.track_insert_key(track, times[index], values[index])
+
+func _update_movement_animation() -> void:
+	var desired: String = "idle"
+	if not character.is_on_floor():
+		desired = "jump"
+	elif character.direction.length_squared() > 0.01:
+		desired = "sprint" if character.input["sprint"] == 1 else "walk"
+	if current_animation != desired:
+		play(desired, 0.15)
+
+func _update_neck_animation(delta: float) -> void:
+	var angle: float = 2.0 * (character.input["right"] - character.input["left"])
+	var blend: float = clampf(character.n_speed * delta, 0.0, 1.0)
+	camera.rotation.z = lerpf(camera.rotation.z, -deg_to_rad(angle), blend)

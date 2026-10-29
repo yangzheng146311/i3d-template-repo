@@ -1,0 +1,37 @@
+extends Item3D
+
+@export var feet_path: ItemPath = ^"../../feet"
+@export var character_path: ItemPath = ^"../.."
+
+var footsteep_timer: float = 0.0
+var footsteep_list: Dictionary = {}
+
+@onready var feet: RayCast = get_item(feet_path) as RayCast
+@onready var character: FPSCharacter = get_item(character_path) as FPSCharacter
+
+func iStart() -> void:
+	set_update(true)
+	for index: int in get_child_count():
+		var child: Item = get_child(index)
+		footsteep_list[child.name] = child
+
+func Update(delta: float) -> void:
+	footsteep_timer = maxf(0.0, footsteep_timer - delta)
+	if footsteep_timer > 0.0 or character.direction.length_squared() <= 0.01:
+		return
+	if not character.is_on_floor() or not feet.is_colliding():
+		return
+	var collider: Object = feet.get_collider()
+	if not (collider is Item):
+		return
+	for group: String in (collider as Item).get_groups():
+		if not footsteep_list.has(group):
+			continue
+		var group_node: Item = footsteep_list[group] as Item
+		if group_node.get_child_count() == 0:
+			continue
+		var index: int = randi() % group_node.get_child_count()
+		var audio: AudioPlayer = group_node.get_child(index) as AudioPlayer
+		audio.play()
+		footsteep_timer = maxf(0.18, 1.0 - 0.06 * character.n_speed)
+		break

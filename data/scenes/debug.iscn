@@ -1,0 +1,6 @@
+[s3_scene load_steps=2 format=3 uid="uid://csvhunh5cndmw"]
+
+[ext_resource type="Script" uid="uid://t8k7u7mu7dmm" path="res://data/scripts/debug/debug.s3" id="1"]
+
+[node name="debug" type="Canvas"]
+script = ExtResource("1")

@@ -1,0 +1,210 @@
+class_name FPSWeapon
+extends RefCounted
+
+const TRAIL_SCENE: PackedScene = preload("res://data/scenes/trail.iscn")
+const SPARK_SCENE: PackedScene = preload("res://data/scenes/spark.iscn")
+const DECAL_SCENE: PackedScene = preload("res://data/scenes/decal.iscn")
+
+var owner: Item3D
+var name: String
+var firerate: float
+var bullets: int
+var ammo: int
+var max_bullets: int
+var damage: int
+var reload_speed: float
+var model_root: Item3D
+var anim: AnimationPlayer
+var audio: Item3D
+var effect: Item3D
+var ray: RayCast
+var barrel: SpaceMarker
+var camera: PlayerCamera
+var character: FPSCharacter
+
+var _rest_position: Vector3 = Vector3.ZERO
+var _shot_cooldown: float = 0.0
+
+static func create(
+	weapon_owner: Item3D,
+	weapon_name: String,
+	fire_rate: float,
+	initial_bullets: int,
+	initial_ammo: int,
+	magazine_size: int,
+	weapon_damage: int,
+	reload_animation_speed: float
+) -> FPSWeapon:
+	var instance: FPSWeapon = FPSWeapon.new()
+	instance._construct(weapon_owner, weapon_name, fire_rate, initial_bullets, initial_ammo, magazine_size, weapon_damage, reload_animation_speed)
+	return instance
+
+func _construct(
+	weapon_owner: Item3D,
+	weapon_name: String,
+	fire_rate: float,
+	initial_bullets: int,
+	initial_ammo: int,
+	magazine_size: int,
+	weapon_damage: int,
+	reload_animation_speed: float
+) -> void:
+	owner = weapon_owner
+	name = weapon_name
+	firerate = fire_rate
+	bullets = initial_bullets
+	ammo = initial_ammo
+	max_bullets = magazine_size
+	damage = weapon_damage
+	reload_speed = reload_animation_speed
+	model_root = owner.get_item(name) as Item3D
+	var mesh: Item3D = owner.get_item("%s/mesh" % name) as Item3D
+	anim = _find_animation_player(mesh)
+	audio = owner.get_item("%s/audio" % name) as Item3D
+	effect = owner.get_item("%s/effect" % name) as Item3D
+	ray = owner.get_item("%s/ray" % name) as RayCast
+	barrel = owner.get_item("%s/barrel" % name) as SpaceMarker
+	camera = owner.get("camera") as PlayerCamera
+	character = owner.get("character") as FPSCharacter
+	_rest_position = model_root.position
+	ray.add_exception(character)
+	if anim == null:
+		push_error("Weapon '%s' has no imported AnimationPlayer." % name)
+
+func _find_animation_player(root: Item) -> AnimationPlayer:
+	if root is AnimationPlayer:
+		return root as AnimationPlayer
+	for child: Item in root.get_children():
+		var result: AnimationPlayer = _find_animation_player(child)
+		if result != null:
+			return result
+	return null
+
+func is_busy() -> bool:
+	if anim == null or not anim.is_playing():
+		return false
+	return ["Draw", "Hide", "Reload", "Shoot"].has(anim.current_animation)
+
+func _draw() -> void:
+	if model_root.visible:
+		return
+	model_root.visible = true
+	_play_animation("Draw", 0.1, 1.0)
+	var draw_audio: AudioPlayer = audio.get_item("draw") as AudioPlayer
+	draw_audio.play()
+
+func _hide() -> void:
+	model_root.visible = false
+	if anim != null:
+		anim.stop()
+
+func _sprint(sprinting: bool, delta: float) -> void:
+	var target_angle: float = -deg_to_rad(40.0) if sprinting else 0.0
+	model_root.rotation.x = lerpf(model_root.rotation.x, target_angle, clampf(5.0 * delta, 0.0, 1.0))
+
+func _shoot(_delta: float) -> void:
+	if _shot_cooldown > 0.0 or _is_action_animation_playing():
+		return
+	var shoot_audio: AudioPlayer = audio.get_item("shoot") as AudioPlayer
+	if bullets <= 0:
+		var out_audio: AudioPlayer = audio.get_item("out") as AudioPlayer
+		if not out_audio.playing:
+			out_audio.pitch_scale = randf_range(0.9, 1.1)
+			out_audio.play()
+		return
+
+	bullets -= 1
+	_shot_cooldown = 1.0 / maxf(firerate, 0.01)
+	camera.rotation.x += deg_to_rad(randf_range(0.4, 0.9))
+	camera.rotation.y += deg_to_rad(randf_range(-0.35, 0.35))
+	camera.shake_force = 0.002
+	camera.shake_time = 0.2
+
+	var muzzle_light: PointLight = effect.get_item("shoot") as PointLight
+	muzzle_light.light_energy = 2.0
+	var fire: ParticlesGPU = effect.get_item("fire") as ParticlesGPU
+	var smoke: ParticlesGPU = effect.get_item("smoke") as ParticlesGPU
+	fire.restart()
+	smoke.restart()
+	shoot_audio.pitch_scale = randf_range(0.9, 1.1)
+	shoot_audio.play()
+	_play_animation("Shoot", 0.0, firerate)
+	_spawn_trail()
+	_apply_raycast_hit()
+
+func _reload() -> void:
+	if bullets >= max_bullets or ammo <= 0 or _is_action_animation_playing():
+		return
+	var amount: int = mini(max_bullets - bullets, ammo)
+	bullets += amount
+	ammo -= amount
+	_play_animation("Reload", 0.2, reload_speed)
+	var reload_audio: AudioPlayer = audio.get_item("reload") as AudioPlayer
+	reload_audio.play()
+
+func _zoom(zooming: bool, delta: float) -> void:
+	var blend: float = clampf(30.0 * delta, 0.0, 1.0)
+	var blocked: bool = anim != null and anim.is_playing() and ["Reload", "Hide", "Draw"].has(anim.current_animation)
+	if zooming and not blocked:
+		camera.fov = lerpf(camera.fov, 40.0, blend)
+		model_root.position = model_root.position.lerp(_rest_position + Vector3(-0.088, 0.001, 0.0), blend)
+	else:
+		camera.fov = lerpf(camera.fov, 70.0, blend)
+		model_root.position = model_root.position.lerp(_rest_position, blend)
+
+func _update(delta: float) -> void:
+	_shot_cooldown = maxf(0.0, _shot_cooldown - delta)
+	var muzzle_light: PointLight = effect.get_item("shoot") as PointLight
+	muzzle_light.light_energy = lerpf(muzzle_light.light_energy, 0.0, clampf(5.0 * delta, 0.0, 1.0))
+	if owner.call("get_current_weapon") == self and _shot_cooldown <= 0.0:
+		camera.rotation.x = lerpf(camera.rotation.x, 0.0, clampf(10.0 * delta, 0.0, 1.0))
+		camera.rotation.y = lerpf(camera.rotation.y, 0.0, clampf(10.0 * delta, 0.0, 1.0))
+	if anim != null and model_root.visible and not anim.is_playing() and anim.has_animation("Idle"):
+		if anim.current_animation != "Idle":
+			anim.play("Idle", 0.1)
+
+func _is_action_animation_playing() -> bool:
+	if anim == null or not anim.is_playing():
+		return false
+	return ["Reload", "Draw", "Hide"].has(anim.current_animation)
+
+func _play_animation(animation_name: String, blend: float, speed: float) -> void:
+	if anim != null and anim.has_animation(animation_name):
+		anim.play(animation_name, blend, speed)
+
+func _spawn_trail() -> void:
+	var main: Item = owner.get_tree().current_scene
+	if main == null:
+		main = owner.get_tree().root
+	var trail: Item3D = TRAIL_SCENE.instantiate() as Item3D
+	main.add_child(trail)
+	trail.global_position = barrel.global_position
+	trail.global_rotation = camera.global_rotation
+
+func _apply_raycast_hit() -> void:
+	if not ray.is_colliding():
+		return
+	var collider: Object = ray.get_collider()
+	if collider == null:
+		return
+	var local_damage: int = int(randf_range(damage / 1.5, damage))
+	if collider is RigidBulk:
+		var body: RigidBulk = collider as RigidBulk
+		body.apply_central_impulse(-ray.get_collision_normal() * (local_damage * 0.3))
+	if not (collider is Item):
+		return
+	var node: Item = collider as Item
+	if node.is_in_group("prop"):
+		if node.is_in_group("metal"):
+			var spark: ParticlesGPU = SPARK_SCENE.instantiate() as ParticlesGPU
+			node.add_child(spark)
+			spark.global_position = ray.get_collision_point()
+			spark.emitting = true
+		if node.has_method("_damage"):
+			node.call("_damage", local_damage)
+	var decal: Item3D = DECAL_SCENE.instantiate() as Item3D
+	node.add_child(decal)
+	decal.global_position = ray.get_collision_point() + ray.get_collision_normal() * 0.01
+	var normal: Vector3 = ray.get_collision_normal()
+	var up: Vector3 = Vector3.UP if absf(normal.dot(Vector3.UP)) < 0.99 else Vector3.FORWARD
+	decal.look_at(decal.global_position - normal, up)

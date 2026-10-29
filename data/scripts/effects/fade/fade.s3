@@ -1,0 +1,16 @@
+extends ColorRect
+
+@export var fade_time: float = 1.0
+
+@onready var timer: Timer = get_item("timer")
+
+func iStart() -> void:
+	set_update(true)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	timer.wait_time = fade_time
+	timer.one_shot = true
+	timer.timeout.connect(queue_free)
+	timer.begin()
+
+func Update(_delta: float) -> void:
+	modulate.a = clampf(timer.time_left / maxf(fade_time, 0.001), 0.0, 1.0)

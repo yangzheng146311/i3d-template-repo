@@ -1,0 +1,8 @@
+[s3_resource type="StandardMaterial3D" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://data/textures/decal.png" id="1"]
+
+[resource]
+transparency = 1
+cull_mode = 0
+albedo_texture = ExtResource("1")

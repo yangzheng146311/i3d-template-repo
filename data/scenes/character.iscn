@@ -1,0 +1,441 @@
+[s3_scene load_steps=47 format=3 uid="uid://d2m5f5l1j61vi"]
+
+[ext_resource type="Script" uid="uid://dex4bdlf118t0" path="res://data/scripts/character/animation.s3" id="animation_script"]
+[ext_resource type="Script" uid="uid://cdrmbfjnhykt1" path="res://data/scripts/character/camera.s3" id="camera_script"]
+[ext_resource type="AudioStream" uid="uid://biu4wndelnuyf" path="res://data/audios/character/footsteep/concrete/0.ogg" id="concrete_0"]
+[ext_resource type="AudioStream" uid="uid://bgmdtc3pmr5ws" path="res://data/audios/character/footsteep/concrete/1.ogg" id="concrete_1"]
+[ext_resource type="AudioStream" uid="uid://chfhmbwyf8g4c" path="res://data/audios/character/footsteep/concrete/2.ogg" id="concrete_2"]
+[ext_resource type="AudioStream" uid="uid://btev3x7ve1cpj" path="res://data/audios/character/footsteep/concrete/3.ogg" id="concrete_3"]
+[ext_resource type="AudioStream" uid="uid://co2idj413p4hf" path="res://data/audios/character/footsteep/concrete/4.ogg" id="concrete_4"]
+[ext_resource type="AudioStream" uid="uid://b227knd88gqy8" path="res://data/audios/character/footsteep/concrete/5.ogg" id="concrete_5"]
+[ext_resource type="AudioStream" uid="uid://bamvijyuaewjn" path="res://data/audios/character/footsteep/concrete/6.ogg" id="concrete_6"]
+[ext_resource type="Texture2D" uid="uid://bhkdpciqlpdcp" path="res://data/textures/crosshair.svg" id="crosshair_texture"]
+[ext_resource type="Texture2D" uid="uid://cslbyndm5i3ff" path="res://data/textures/fire.png" id="fire_texture"]
+[ext_resource type="Script" uid="uid://c0o4v1jlbavh0" path="res://data/scripts/character/footsteep.s3" id="footstep_script"]
+[ext_resource type="AudioStream" uid="uid://dmcmccel7qbtd" path="res://data/audios/weapons/glock_17/draw.ogg" id="glock_draw"]
+[ext_resource type="AudioStream" uid="uid://bsctf2pm2li3x" path="res://data/audios/weapons/glock_17/fire.ogg" id="glock_fire"]
+[ext_resource type="PackedScene" path="res://data/models/weapons/glock_17/scene.iscn" id="glock_gltf"]
+[ext_resource type="AudioStream" uid="uid://dowrqr2d5albv" path="res://data/audios/weapons/glock_17/out.ogg" id="glock_out"]
+[ext_resource type="AudioStream" uid="uid://0s0y2e7lyibj" path="res://data/audios/weapons/glock_17/reload.ogg" id="glock_reload"]
+[ext_resource type="AudioStream" uid="uid://dcvnlmv4pqqit" path="res://data/audios/character/footsteep/grass/0.ogg" id="grass_0"]
+[ext_resource type="AudioStream" uid="uid://12l1j36x5ydc" path="res://data/audios/character/footsteep/grass/1.ogg" id="grass_1"]
+[ext_resource type="AudioStream" uid="uid://delagd54bu6ku" path="res://data/audios/character/footsteep/grass/2.ogg" id="grass_2"]
+[ext_resource type="AudioStream" uid="uid://c2u73i7uthkew" path="res://data/audios/character/footsteep/grass/3.ogg" id="grass_3"]
+[ext_resource type="AudioStream" uid="uid://ciyw4jrgq81hj" path="res://data/audios/character/footsteep/grass/4.ogg" id="grass_4"]
+[ext_resource type="AudioStream" uid="uid://ckrqjfjurqqr4" path="res://data/audios/character/footsteep/grass/5.ogg" id="grass_5"]
+[ext_resource type="Script" uid="uid://c8iem2hehf2p1" path="res://data/scripts/character/head.s3" id="head_script"]
+[ext_resource type="FontFile" uid="uid://clvyk5hl5tdx5" path="res://data/fonts/bonard.ttf" id="hud_font"]
+[ext_resource type="Script" uid="uid://dnvjgso5irgmi" path="res://data/scripts/character/hud.s3" id="hud_script"]
+[ext_resource type="AudioStream" uid="uid://t4r6qw75xoqe" path="res://data/audios/weapons/kriss/draw.ogg" id="kriss_draw"]
+[ext_resource type="AudioStream" uid="uid://cyfym3ygsxh2q" path="res://data/audios/weapons/kriss/shoot.ogg" id="kriss_fire"]
+[ext_resource type="PackedScene" path="res://data/models/weapons/kriss/scene.iscn" id="kriss_gltf"]
+[ext_resource type="AudioStream" uid="uid://fkbdocsml0pg" path="res://data/audios/weapons/kriss/out.ogg" id="kriss_out"]
+[ext_resource type="AudioStream" uid="uid://b2rlxfyrktvi2" path="res://data/audios/weapons/kriss/reload.ogg" id="kriss_reload"]
+[ext_resource type="AudioStream" uid="uid://bjdigavuq5h4l" path="res://data/audios/weapons/mk_23/draw.ogg" id="mk_draw"]
+[ext_resource type="AudioStream" uid="uid://cdf3du0b7teba" path="res://data/audios/weapons/mk_23/fire.ogg" id="mk_fire"]
+[ext_resource type="PackedScene" path="res://data/models/weapons/mk_23/scene.iscn" id="mk_gltf"]
+[ext_resource type="AudioStream" uid="uid://djpamef7517wo" path="res://data/audios/weapons/mk_23/out.ogg" id="mk_out"]
+[ext_resource type="AudioStream" uid="uid://dmv0a3danwj5w" path="res://data/audios/weapons/mk_23/reload.ogg" id="mk_reload"]
+[ext_resource type="Script" uid="uid://cqh3wp2slqgka" path="res://data/scripts/character/movement.s3" id="movement_script"]
+[ext_resource type="Texture2D" uid="uid://xwds0hf7c137" path="res://data/textures/smoke.png" id="smoke_texture"]
+[ext_resource type="Script" uid="uid://c8cwka4oj1uty" path="res://data/scripts/weapon/weapons.s3" id="weapons_script"]
+
+[sub_resource type="ParticleProcessMaterial" id="smoke_process"]
+emission_shape = 1
+emission_sphere_radius = 0.02
+direction = Vector3(0, 1, 0)
+spread = 35.0
+initial_velocity_min = 0.05
+initial_velocity_max = 0.2
+gravity = Vector3(0, 0.3, 0)
+scale_min = 0.05
+scale_max = 0.15
+color = Color(1, 1, 1, 0.15)
+
+[sub_resource type="StandardMaterial3D" id="smoke_material"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.15)
+albedo_texture = ExtResource("smoke_texture")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="smoke_mesh"]
+material = SubResource("smoke_material")
+size = Vector2(0.2, 0.2)
+
+[sub_resource type="ParticleProcessMaterial" id="fire_process"]
+emission_shape = 1
+emission_sphere_radius = 0.02
+direction = Vector3(0, 0, -1)
+spread = 25.0
+initial_velocity_min = 0.1
+initial_velocity_max = 0.4
+scale_min = 0.05
+scale_max = 0.15
+
+[sub_resource type="StandardMaterial3D" id="fire_material"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+albedo_texture = ExtResource("fire_texture")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="fire_mesh"]
+material = SubResource("fire_material")
+size = Vector2(0.2, 0.2)
+
+[sub_resource type="CapsuleShape3D" id="capsule"]
+height = 4.0
+
+[node name="character" type="CharacterBulk"]
+script = ExtResource("movement_script")
+
+[node name="hud" type="Canvas" parent="."]
+script = ExtResource("hud_script")
+
+[node name="crosshair" type="Sprite2D" parent="hud"]
+modulate = Color(1, 1, 1, 0.85)
+texture = ExtResource("crosshair_texture")
+
+[node name="border" type="Sprite2D" parent="hud/crosshair"]
+modulate = Color(0, 0, 0, 0.8)
+z_index = -1
+scale = Vector2(1.1, 1.1)
+texture = ExtResource("crosshair_texture")
+
+[node name="weapon_hud" type="Node2D" parent="hud"]
+
+[node name="name" type="Label" parent="hud/weapon_hud"]
+offset_left = 16.0
+offset_top = 3.0
+offset_right = 119.0
+offset_bottom = 36.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 3
+theme_override_fonts/font = ExtResource("hud_font")
+theme_override_font_sizes/font_size = 32
+text = "MK 23"
+uppercase = true
+
+[node name="bullets" type="Label" parent="hud/weapon_hud"]
+offset_left = 17.0
+offset_top = -60.0
+offset_right = 59.0
+offset_bottom = 5.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 3
+theme_override_fonts/font = ExtResource("hud_font")
+theme_override_font_sizes/font_size = 64
+text = "12"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="ammo" type="Label" parent="hud/weapon_hud"]
+offset_left = 78.0
+offset_top = -33.0
+offset_right = 130.0
+offset_bottom = 5.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 3
+theme_override_fonts/font = ExtResource("hud_font")
+theme_override_font_sizes/font_size = 32
+text = "999"
+uppercase = true
+
+[node name="shadow" type="ColorRect" parent="hud/weapon_hud"]
+self_modulate = Color(1, 1, 1, 0.588235)
+offset_left = 70.0
+offset_top = -60.0
+offset_right = 71.0
+offset_bottom = 12.0
+scale = Vector2(1, 0.771)
+color = Color(0, 0, 0, 1)
+
+[node name="line" type="ColorRect" parent="hud/weapon_hud/shadow"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 1.0
+offset_bottom = 71.0
+
+[node name="head" type="RayCast" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+target_position = Vector3(0, 1.5, 0)
+script = ExtResource("head_script")
+
+[node name="neck" type="Item3D" parent="head"]
+
+[node name="camera" type="Camera" parent="head/neck"]
+current = true
+fov = 70.0
+script = ExtResource("camera_script")
+
+[node name="anim" type="AnimationPlayer" parent="head/neck"]
+script = ExtResource("animation_script")
+
+[node name="feet" type="RayCast" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+target_position = Vector3(0, -2, 0)
+
+[node name="weapons" type="Item3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+script = ExtResource("weapons_script")
+
+[node name="mk_23" type="Item3D" parent="weapons"]
+visible = false
+
+[node name="ray" type="RayCast" parent="weapons/mk_23"]
+target_position = Vector3(0, 0, -200)
+
+[node name="effect" type="Item3D" parent="weapons/mk_23"]
+
+[node name="smoke" type="ParticlesGPU" parent="weapons/mk_23/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.55)
+cast_shadow = 0
+emitting = false
+amount = 5
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("smoke_process")
+draw_pass_1 = SubResource("smoke_mesh")
+
+[node name="fire" type="ParticlesGPU" parent="weapons/mk_23/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.55)
+cast_shadow = 0
+emitting = false
+amount = 5
+lifetime = 0.05
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("fire_process")
+draw_pass_1 = SubResource("fire_mesh")
+
+[node name="shoot" type="PointLight" parent="weapons/mk_23/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.55)
+light_color = Color(0.94902, 0.490196, 0.0470588, 1)
+light_energy = 0.0
+omni_range = 10.0
+
+[node name="mesh" type="Item3D" parent="weapons/mk_23"]
+transform = Transform3D(-0.01, 0, 0, 0, 0.01, 0, 0, 0, -0.01, -0.02, -1.57589, -0.321301)
+
+[node name="gltf" parent="weapons/mk_23/mesh" instance=ExtResource("mk_gltf")]
+
+[node name="audio" type="Item3D" parent="weapons/mk_23"]
+
+[node name="draw" type="AudioPlayer" parent="weapons/mk_23/audio"]
+stream = ExtResource("mk_draw")
+
+[node name="shoot" type="AudioPlayer" parent="weapons/mk_23/audio"]
+stream = ExtResource("mk_fire")
+
+[node name="reload" type="AudioPlayer" parent="weapons/mk_23/audio"]
+stream = ExtResource("mk_reload")
+
+[node name="out" type="AudioPlayer" parent="weapons/mk_23/audio"]
+stream = ExtResource("mk_out")
+volume_db = -10.0
+
+[node name="barrel" type="SpaceMarker" parent="weapons/mk_23"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.55)
+
+[node name="glock_17" type="Item3D" parent="weapons"]
+visible = false
+
+[node name="ray" type="RayCast" parent="weapons/glock_17"]
+target_position = Vector3(0, 0, -200)
+
+[node name="effect" type="Item3D" parent="weapons/glock_17"]
+
+[node name="smoke" type="ParticlesGPU" parent="weapons/glock_17/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.525)
+cast_shadow = 0
+emitting = false
+amount = 5
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("smoke_process")
+draw_pass_1 = SubResource("smoke_mesh")
+
+[node name="fire" type="ParticlesGPU" parent="weapons/glock_17/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.525)
+cast_shadow = 0
+emitting = false
+amount = 5
+lifetime = 0.05
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("fire_process")
+draw_pass_1 = SubResource("fire_mesh")
+
+[node name="shoot" type="PointLight" parent="weapons/glock_17/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.525)
+light_color = Color(0.94902, 0.490196, 0.0470588, 1)
+light_energy = 0.0
+omni_range = 10.0
+
+[node name="mesh" type="Item3D" parent="weapons/glock_17"]
+transform = Transform3D(-0.00995963, 0, -0.000897634, 0, 0.01, 0, 0.000897634, 0, -0.00995963, -0.0212584, -1.56926, -0.317216)
+
+[node name="gltf" parent="weapons/glock_17/mesh" instance=ExtResource("glock_gltf")]
+
+[node name="audio" type="Item3D" parent="weapons/glock_17"]
+
+[node name="draw" type="AudioPlayer" parent="weapons/glock_17/audio"]
+stream = ExtResource("glock_draw")
+
+[node name="shoot" type="AudioPlayer" parent="weapons/glock_17/audio"]
+stream = ExtResource("glock_fire")
+
+[node name="reload" type="AudioPlayer" parent="weapons/glock_17/audio"]
+stream = ExtResource("glock_reload")
+
+[node name="out" type="AudioPlayer" parent="weapons/glock_17/audio"]
+stream = ExtResource("glock_out")
+volume_db = -10.0
+
+[node name="barrel" type="SpaceMarker" parent="weapons/glock_17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.525)
+
+[node name="kriss" type="Item3D" parent="weapons"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0137, 0.09)
+visible = false
+
+[node name="effect" type="Item3D" parent="weapons/kriss"]
+
+[node name="smoke" type="ParticlesGPU" parent="weapons/kriss/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.69)
+cast_shadow = 0
+emitting = false
+amount = 5
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("smoke_process")
+draw_pass_1 = SubResource("smoke_mesh")
+
+[node name="fire" type="ParticlesGPU" parent="weapons/kriss/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.69)
+cast_shadow = 0
+emitting = false
+amount = 5
+lifetime = 0.05
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("fire_process")
+draw_pass_1 = SubResource("fire_mesh")
+
+[node name="shoot" type="PointLight" parent="weapons/kriss/effect"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.69)
+light_color = Color(0.94902, 0.490196, 0.0470588, 1)
+light_energy = 0.0
+omni_range = 10.0
+
+[node name="audio" type="Item3D" parent="weapons/kriss"]
+
+[node name="draw" type="AudioPlayer" parent="weapons/kriss/audio"]
+stream = ExtResource("kriss_draw")
+
+[node name="shoot" type="AudioPlayer" parent="weapons/kriss/audio"]
+stream = ExtResource("kriss_fire")
+
+[node name="reload" type="AudioPlayer" parent="weapons/kriss/audio"]
+stream = ExtResource("kriss_reload")
+
+[node name="out" type="AudioPlayer" parent="weapons/kriss/audio"]
+stream = ExtResource("kriss_out")
+volume_db = -10.0
+
+[node name="mesh" type="Item3D" parent="weapons/kriss"]
+transform = Transform3D(-0.01, 0, 0, 0, 0.01, 0, 0, 0, -0.01, -0.0350349, -1.49932, -0.242294)
+
+[node name="gltf" parent="weapons/kriss/mesh" instance=ExtResource("kriss_gltf")]
+
+[node name="barrel" type="SpaceMarker" parent="weapons/kriss"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.088, -0.055, -0.69)
+
+[node name="ray" type="RayCast" parent="weapons/kriss"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0137, -0.09)
+target_position = Vector3(0, 0, -200)
+
+[node name="audios" type="Item3D" parent="."]
+
+[node name="footsteep" type="Item3D" parent="audios"]
+script = ExtResource("footstep_script")
+
+[node name="metal" type="Item3D" parent="audios/footsteep" groups=["metal"]]
+
+[node name="grass" type="Item3D" parent="audios/footsteep" groups=["grass"]]
+
+[node name="0" type="AudioPlayer" parent="audios/footsteep/grass"]
+stream = ExtResource("grass_0")
+volume_db = -10.0
+
+[node name="1" type="AudioPlayer" parent="audios/footsteep/grass"]
+stream = ExtResource("grass_1")
+volume_db = -10.0
+
+[node name="2" type="AudioPlayer" parent="audios/footsteep/grass"]
+stream = ExtResource("grass_2")
+volume_db = -10.0
+
+[node name="3" type="AudioPlayer" parent="audios/footsteep/grass"]
+stream = ExtResource("grass_3")
+volume_db = -10.0
+
+[node name="4" type="AudioPlayer" parent="audios/footsteep/grass"]
+stream = ExtResource("grass_4")
+volume_db = -10.0
+
+[node name="5" type="AudioPlayer" parent="audios/footsteep/grass"]
+stream = ExtResource("grass_5")
+volume_db = -10.0
+
+[node name="concrete" type="Item3D" parent="audios/footsteep" groups=["concrete"]]
+
+[node name="0" type="AudioPlayer" parent="audios/footsteep/concrete"]
+stream = ExtResource("concrete_0")
+volume_db = -10.0
+
+[node name="1" type="AudioPlayer" parent="audios/footsteep/concrete"]
+stream = ExtResource("concrete_1")
+volume_db = -10.0
+
+[node name="2" type="AudioPlayer" parent="audios/footsteep/concrete"]
+stream = ExtResource("concrete_2")
+volume_db = -10.0
+
+[node name="3" type="AudioPlayer" parent="audios/footsteep/concrete"]
+stream = ExtResource("concrete_3")
+volume_db = -10.0
+
+[node name="4" type="AudioPlayer" parent="audios/footsteep/concrete"]
+stream = ExtResource("concrete_4")
+volume_db = -10.0
+
+[node name="5" type="AudioPlayer" parent="audios/footsteep/concrete"]
+stream = ExtResource("concrete_5")
+volume_db = -10.0
+
+[node name="6" type="AudioPlayer" parent="audios/footsteep/concrete"]
+stream = ExtResource("concrete_6")
+volume_db = -10.0
+
+[node name="collision" type="ColliderShape" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("capsule")

@@ -1,0 +1,67 @@
+extends RigidBulk
+
+@export var durability: float = 100.0
+
+var remove_decal: bool = false
+var _exploded: bool = false
+
+@onready var collision: ColliderShape = get_item("collision")
+@onready var lifetime_timer: Timer = get_item("timer")
+@onready var chain_timer: Timer = get_item("explosion/timer")
+
+func iStart() -> void:
+	set_update(true)
+	lifetime_timer.timeout.connect(queue_free)
+	chain_timer.timeout.connect(_explode_others)
+
+func _damage(amount: float) -> void:
+	if _exploded or durability <= 0.0:
+		return
+	durability -= amount
+	var impact: AudioPlayer = get_item("audios/impact")
+	impact.pitch_scale = randf_range(0.9, 1.1)
+	impact.play()
+	if durability <= 0.0:
+		_explosion()
+		chain_timer.begin()
+		lifetime_timer.begin()
+
+func Update(_delta: float) -> void:
+	if remove_decal:
+		for child: Item in get_children():
+			if child.is_in_group("decal"):
+				child.queue_free()
+
+func _explosion() -> void:
+	if _exploded:
+		return
+	_exploded = true
+	collision.set_deferred("disabled", true)
+	freeze_mode = RigidBulk.FREEZE_MODE_STATIC
+	freeze = true
+
+	var main: Item = get_tree().current_scene
+	if main != null:
+		var burnt_ground: Item3D = preload("res://data/scenes/burnt_ground.iscn").instantiate() as Item3D
+		main.add_child(burnt_ground)
+		burnt_ground.global_position = global_position
+
+	get_item("mesh").visible = false
+	get_item("effects/ex").emitting = true
+	get_item("effects/plo").emitting = true
+	get_item("effects/sion").emitting = true
+	var explosion_audio: AudioPlayer = get_item("audios/explosion")
+	explosion_audio.pitch_scale = randf_range(0.9, 1.1)
+	explosion_audio.play()
+	remove_decal = true
+
+func _explode_others() -> void:
+	for body: Item in get_item("explosion").get_overlapping_bodies():
+		if body == self or not body.has_method("_damage"):
+			continue
+		var other_durability: Variant = body.get("durability")
+		if other_durability != null and float(other_durability) > 0.0:
+			var body_3d: Item3D = body as Item3D
+			if body_3d != null:
+				var explosion_distance: float = 5.0 * body_3d.global_position.distance_to(global_position)
+				body.call("_damage", 300.0 - explosion_distance)

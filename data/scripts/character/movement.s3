@@ -1,0 +1,101 @@
+class_name FPSCharacter
+extends CharacterBulk
+
+@export var walk_speed: float = 8.0
+@export var sprint_speed: float = 12.0
+@export var crouch_speed: float = 4.0
+@export var acceleration: float = 10.0
+@export var air_acceleration: float = 3.0
+@export var gravity: float = 50.0
+@export var jump_height: float = 15.0
+@export var crouch_lerp_speed: float = 10.0
+@export var standing_height: float = 4.0
+@export var crouching_height: float = 2.0
+
+var n_speed: float = 4.0
+var direction: Vector3 = Vector3.ZERO
+var input: Dictionary = {
+	"left": 0,
+	"right": 0,
+	"foward": 0,
+	"back": 0,
+	"crouch": 0,
+	"jump": 0,
+	"sprint": 0,
+}
+
+@onready var head: RayCast = get_item("head")
+@onready var character_collision: ColliderShape = get_item("collision")
+
+func iStart() -> void:
+	set_physics_process(true)
+	up_direction = Vector3.UP
+	floor_stop_on_slope = false
+	floor_max_angle = PI / 4.0
+	max_slides = 4
+
+func FixedUpdate(delta: float) -> void:
+	_update_inputs()
+	_update_speed(delta)
+	_update_crouch(delta)
+	_update_jump()
+	_update_movement(delta)
+
+func _update_inputs() -> void:
+	input["left"] = int(Input.is_action_pressed("KEY_A"))
+	input["right"] = int(Input.is_action_pressed("KEY_D"))
+	input["foward"] = int(Input.is_action_pressed("KEY_W"))
+	input["back"] = int(Input.is_action_pressed("KEY_S"))
+	input["crouch"] = int(Input.is_action_pressed("KEY_CTRL"))
+	input["jump"] = int(Input.is_action_pressed("KEY_SPACE"))
+	input["sprint"] = int(Input.is_action_pressed("KEY_SHIFT"))
+
+func _update_speed(delta: float) -> void:
+	var target_speed: float = walk_speed
+	if input["crouch"] == 1:
+		target_speed = crouch_speed
+	elif input["sprint"] == 1:
+		target_speed = sprint_speed
+	n_speed = lerpf(n_speed, target_speed, clampf(3.0 * delta, 0.0, 1.0))
+
+func _update_movement(delta: float) -> void:
+	var move_input: Vector2 = Input.get_vector("KEY_A", "KEY_D", "KEY_W", "KEY_S")
+	var head_basis: Basis = head.global_transform.basis
+	direction = head_basis.x * move_input.x + head_basis.z * move_input.y
+	direction.y = 0.0
+	direction = direction.normalized()
+
+	var horizontal_velocity: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
+	var target_velocity: Vector3 = direction * n_speed
+	var blend: float = acceleration if is_on_floor() else air_acceleration
+	horizontal_velocity = horizontal_velocity.lerp(target_velocity, clampf(blend * delta, 0.0, 1.0))
+	velocity.x = horizontal_velocity.x
+	velocity.z = horizontal_velocity.z
+
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+	elif velocity.y < 0.0:
+		velocity.y = -0.5
+
+	move_and_slide()
+
+func _update_crouch(delta: float) -> void:
+	var capsule: CapsuleShape3D = character_collision.shape as CapsuleShape3D
+	if capsule == null:
+		return
+	var should_crouch: bool = input["crouch"] == 1 or head.is_colliding()
+	var target_height: float = crouching_height if should_crouch else standing_height
+	capsule.height = maxf(
+		lerpf(capsule.height, target_height, clampf(crouch_lerp_speed * delta, 0.0, 1.0)),
+		capsule.radius * 2.0
+	)
+	character_collision.position.y = capsule.height * 0.5
+	head.position.y = lerpf(
+		head.position.y,
+		1.5 if should_crouch else 3.0,
+		clampf(crouch_lerp_speed * delta, 0.0, 1.0)
+	)
+
+func _update_jump() -> void:
+	if Input.is_action_just_pressed("KEY_SPACE") and is_on_floor():
+		velocity.y = jump_height

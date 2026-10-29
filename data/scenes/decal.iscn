@@ -1,0 +1,20 @@
+[s3_scene load_steps=4 format=3 uid="uid://cb28qg24crbfi"]
+
+[ext_resource type="Material" path="res://data/materials/decal.ires" id="1"]
+[ext_resource type="Script" uid="uid://ctvnhfy67067q" path="res://data/scripts/weapon/decal.s3" id="2"]
+
+[sub_resource type="QuadMesh" id="1"]
+size = Vector2(0.3, 0.3)
+
+[node name="decal" type="Item3D" groups=["decal"]]
+script = ExtResource("2")
+
+[node name="mesh" type="MeshRender" parent="."]
+material_override = ExtResource("1")
+cast_shadow = 0
+mesh = SubResource("1")
+
+[node name="timer" type="Timer" parent="."]
+wait_time = 9999.0
+one_shot = true
+autostart = true

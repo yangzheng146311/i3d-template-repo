@@ -1,0 +1,16 @@
+extends Item3D
+
+@export var speed: float = 200.0
+@export var timer: ItemPath = ^"timer"
+
+@onready var lifetime_timer: Timer = get_item(timer) as Timer
+
+func iStart() -> void:
+	set_update(true)
+	var capsule: CapsuleMesh = get_item("mesh").mesh as CapsuleMesh
+	if capsule != null:
+		get_item("mesh").position.z = -capsule.height / 2.0
+	lifetime_timer.timeout.connect(queue_free)
+
+func Update(delta: float) -> void:
+	global_position -= global_transform.basis.z * speed * delta

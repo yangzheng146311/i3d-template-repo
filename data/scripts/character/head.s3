@@ -1,0 +1,28 @@
+extends RayCast
+
+@export var sensitivity: float = 0.2
+@export var captured: bool = true
+@export var max_pitch_degrees: float = 85.0
+
+func iStart() -> void:
+	set_process_unhandled_input(true)
+	_update_mouse_mode()
+
+func unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("KEY_ESCAPE"):
+		captured = not captured
+		_update_mouse_mode()
+		get_viewport().set_input_as_handled()
+		return
+
+	if captured and event is InputEventMouseMotion:
+		var motion: InputEventMouseMotion = event as InputEventMouseMotion
+		rotation.y -= deg_to_rad(motion.relative.x * sensitivity)
+		rotation.x = clampf(
+			rotation.x - deg_to_rad(motion.relative.y * sensitivity),
+			-deg_to_rad(max_pitch_degrees),
+			deg_to_rad(max_pitch_degrees)
+		)
+
+func _update_mouse_mode() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if captured else Input.MOUSE_MODE_VISIBLE

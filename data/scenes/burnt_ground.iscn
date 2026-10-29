@@ -1,0 +1,25 @@
+[s3_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" path="res://data/textures/burnt_ground.png" id="texture"]
+[ext_resource type="Script" path="res://data/scripts/burnt_ground/burnt_ground.s3" id="script"]
+
+[sub_resource type="StandardMaterial3D" id="material"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.588235)
+albedo_texture = ExtResource("texture")
+metallic_specular = 0.0
+
+[sub_resource type="PlaneMesh" id="mesh"]
+material = SubResource("material")
+size = Vector2(4, 4)
+
+[node name="burnt_ground" type="Item3D"]
+script = ExtResource("script")
+ray = ItemPath("ray")
+
+[node name="mesh" type="MeshRender" parent="."]
+mesh = SubResource("mesh")
+
+[node name="ray" type="RayCast" parent="."]
+enabled = true
+target_position = Vector3(0, -100, 0)

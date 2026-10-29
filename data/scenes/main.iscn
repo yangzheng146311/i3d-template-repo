@@ -1,0 +1,99 @@
+[s3_scene load_steps=14 format=3 uid="uid://dis3i8bjn4piq"]
+
+[ext_resource type="PackedScene" path="res://data/scenes/barrel.iscn" id="barrel"]
+[ext_resource type="PackedScene" path="res://data/scenes/character.iscn" id="character"]
+[ext_resource type="PackedScene" path="res://data/scenes/debug.iscn" id="debug"]
+[ext_resource type="PackedScene" uid="uid://b632uq6h3cdyp" path="res://data/scenes/fade.iscn" id="fade"]
+[ext_resource type="Texture2D" uid="uid://byn54xykak6k0" path="res://data/textures/grid.png" id="grid"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_material"]
+sky_top_color = Color(0.24, 0.42, 0.62, 1)
+sky_horizon_color = Color(0.65, 0.7, 0.75, 1)
+ground_bottom_color = Color(0.12, 0.12, 0.12, 1)
+ground_horizon_color = Color(0.65, 0.7, 0.75, 1)
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_material")
+
+[sub_resource type="Environment" id="environment"]
+background_mode = 2
+sky = SubResource("sky")
+tonemap_mode = 2
+glow_enabled = true
+fog_enabled = true
+fog_light_color = Color(0.55, 0.58, 0.62, 1)
+fog_density = 0.001
+
+[sub_resource type="BoxMesh" id="wall_mesh"]
+size = Vector3(1, 6, 20)
+
+[sub_resource type="ConvexPolygonShape3D" id="wall_shape"]
+points = PackedVector3Array(-0.5, 3, 10, 0.5, 3, -10, 0.5, 3, 10, -0.5, 3, -10, -0.5, -3, 10, 0.5, -3, -10, 0.5, -3, 10, -0.5, -3, -10, 0.5, 3, 10, -0.5, 3, -10, -0.5, -3, 10, -0.5, -3, -10, 0.5, -3, 10, -0.5, 3, 10, -0.5, -3, 10, -0.5, 3, 10, 0.5, 3, -10, -0.5, 3, 10, -0.5, -3, 10, 0.5, -3, 10, -0.5, -3, 10, 0.5, -3, 10, -0.5, 3, 10, 0.5, 3, -10, -0.5, 3, -10)
+
+[sub_resource type="StandardMaterial3D" id="terrain_material"]
+albedo_texture = ExtResource("grid")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="terrain_mesh"]
+material = SubResource("terrain_material")
+size = Vector3(500, 2, 500)
+
+[sub_resource type="BoxShape3D" id="terrain_shape"]
+size = Vector3(500, 2, 500)
+
+[node name="main" type="Item"]
+
+[node name="post_processing" type="Item3D" parent="."]
+
+[node name="sun" type="DirectionalLight" parent="post_processing"]
+transform = Transform3D(0.707107, 0.612372, -0.353553, 0, 0.5, 0.866025, 0.707107, -0.612373, 0.353553, 0, 0, 0)
+light_color = Color(0.976471, 0.959804, 0.85098, 1)
+shadow_enabled = true
+directional_shadow_blend_splits = true
+
+[node name="environment" type="WorldEnvironment" parent="post_processing"]
+environment = SubResource("environment")
+
+[node name="character" parent="." instance=ExtResource("character")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 10)
+
+[node name="debug" parent="." instance=ExtResource("debug")]
+
+[node name="fade" parent="." instance=ExtResource("fade")]
+
+[node name="scenario" type="Item3D" parent="."]
+
+[node name="wall" type="StaticBulk" parent="scenario" groups=["wallk"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 4, 8)
+
+[node name="mesh" type="MeshRender" parent="scenario/wall"]
+mesh = SubResource("wall_mesh")
+
+[node name="collision" type="ColliderShape" parent="scenario/wall"]
+shape = SubResource("wall_shape")
+
+[node name="terrain" type="StaticBulk" parent="scenario" groups=["concrete"]]
+
+[node name="mesh" type="MeshRender" parent="scenario/terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0358462, -0.01824, 0.0206671)
+mesh = SubResource("terrain_mesh")
+
+[node name="collision" type="ColliderShape" parent="scenario/terrain"]
+shape = SubResource("terrain_shape")
+
+[node name="props" type="Item3D" parent="scenario"]
+
+[node name="barrel_0" parent="scenario/props" instance=ExtResource("barrel")]
+transform = Transform3D(0.727593, 0, -0.686009, 0, 1, 0, 0.686009, 0, 0.727593, -7.54773, 2.25286, 12.1553)
+
+[node name="barrel_1" parent="scenario/props" instance=ExtResource("barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.4004, 2.67564, 8.92728)
+
+[node name="barrel_2" parent="scenario/props" instance=ExtResource("barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.23876, 2.67564, 8.92728)
+
+[node name="barrel_3" parent="scenario/props" instance=ExtResource("barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.23876, 2.67564, 17.051)
+
+[node name="barrel_4" parent="scenario/props" instance=ExtResource("barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2444, 2.67564, 13.7984)

@@ -1,0 +1,54 @@
+[s3_scene load_steps=7 format=3 uid="uid://c4nwc7lcqc3dx"]
+
+[ext_resource type="Script" uid="uid://hhc4l2jn7knl" path="res://data/scripts/effects/spark/spark.s3" id="script"]
+
+[sub_resource type="Curve" id="curve"]
+_data = [Vector2(0.0124224, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+
+[sub_resource type="CurveTexture" id="curve_texture"]
+curve = SubResource("curve")
+
+[sub_resource type="ParticleProcessMaterial" id="process"]
+lifetime_randomness = 0.3
+emission_shape = 1
+emission_sphere_radius = 0.01
+angle_min = -720.0
+angle_max = 720.0
+direction = Vector3(0, 0, 0)
+spread = 180.0
+gravity = Vector3(0, -1, 0)
+radial_accel_min = 7.0
+radial_accel_max = 100.0
+scale_curve = SubResource("curve_texture")
+
+[sub_resource type="StandardMaterial3D" id="material"]
+blend_mode = 1
+cull_mode = 2
+metallic_specular = 0.0
+emission_enabled = true
+emission = Color(1, 0.72549, 0, 1)
+emission_energy_multiplier = 8.0
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="mesh"]
+material = SubResource("material")
+size = Vector2(0.06, 0.06)
+
+[node name="spark" type="ParticlesGPU"]
+cast_shadow = 0
+emitting = false
+amount = 50
+lifetime = 0.15
+one_shot = true
+explosiveness = 0.5
+process_material = SubResource("process")
+draw_pass_1 = SubResource("mesh")
+script = ExtResource("script")
+
+[node name="timer" type="Timer" parent="."]
+wait_time = 0.3
+one_shot = true
+autostart = true

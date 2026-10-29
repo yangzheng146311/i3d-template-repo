@@ -1,0 +1,38 @@
+extends Canvas
+
+@export var weapon_path: ItemPath = ^"../weapons"
+@export var weapon_hud_path: ItemPath = ^"weapon_hud"
+@export var crosshair_path: ItemPath = ^"crosshair"
+
+@onready var weapon: WeaponArsenal = get_item(weapon_path) as WeaponArsenal
+@onready var weapon_hud: Node2D = get_item(weapon_hud_path) as Node2D
+@onready var crosshair: Sprite2D = get_item(crosshair_path) as Sprite2D
+@onready var name_label: Label = weapon_hud.get_item("name") as Label
+@onready var bullets_label: Label = weapon_hud.get_item("bullets") as Label
+@onready var ammo_label: Label = weapon_hud.get_item("ammo") as Label
+
+func iStart() -> void:
+	set_update(true)
+
+func Update(_delta: float) -> void:
+	_update_weapon_hud()
+	_update_crosshair()
+
+func _update_weapon_hud() -> void:
+	var current_weapon: FPSWeapon = weapon.get_current_weapon()
+	if current_weapon == null:
+		return
+	weapon_hud.position = get_viewport().get_visible_rect().size - Vector2(180.0, 80.0)
+	name_label.text = current_weapon.name
+	bullets_label.text = str(current_weapon.bullets)
+	ammo_label.text = str(current_weapon.ammo)
+	if current_weapon.bullets < current_weapon.max_bullets / 4:
+		bullets_label.add_theme_color_override("font_color", Color("#ff0000"))
+	elif current_weapon.bullets < current_weapon.max_bullets / 2:
+		bullets_label.add_theme_color_override("font_color", Color("#dd761b"))
+	else:
+		bullets_label.add_theme_color_override("font_color", Color("#ffffff"))
+
+func _update_crosshair() -> void:
+	crosshair.position = get_viewport().get_visible_rect().size / 2.0
+	crosshair.visible = weapon.input["zoom"] == 0

@@ -1,0 +1,86 @@
+class_name WeaponArsenal
+extends Item3D
+
+@export var character_path: ItemPath = ^".."
+@export var head_path: ItemPath = ^"../head"
+@export var camera_path: ItemPath = ^"../head/neck/camera"
+
+var arsenal: Dictionary = {}
+var current: int = 0
+var input: Dictionary = {"shoot": 0, "reload": 0, "zoom": 0}
+
+@onready var character: FPSCharacter = get_item(character_path) as FPSCharacter
+@onready var head: Item3D = get_item(head_path) as Item3D
+@onready var camera: PlayerCamera = get_item(camera_path) as PlayerCamera
+
+func iStart() -> void:
+	top_level = true
+	set_physics_process(true)
+	set_process_unhandled_input(true)
+	arsenal["mk_23"] = FPSWeapon.create(self, "mk_23", 2.0, 12, 999, 12, 40, 1.2)
+	arsenal["glock_17"] = FPSWeapon.create(self, "glock_17", 3.0, 12, 999, 12, 35, 1.2)
+	arsenal["kriss"] = FPSWeapon.create(self, "kriss", 6.0, 32, 999, 33, 25, 1.5)
+	for weapon: FPSWeapon in arsenal.values():
+		weapon._hide()
+	get_current_weapon()._draw()
+
+func FixedUpdate(delta: float) -> void:
+	if arsenal.is_empty():
+		return
+	input["shoot"] = int(Input.is_action_pressed("mb_left"))
+	input["reload"] = int(Input.is_action_just_pressed("KEY_R"))
+	input["zoom"] = int(Input.is_action_pressed("mb_right"))
+
+	var weapon: FPSWeapon = get_current_weapon()
+	var sprinting: bool = character.input["sprint"] == 1 and character.direction.length_squared() > 0.01
+	weapon._sprint(sprinting or not character.is_on_floor(), delta)
+	if not sprinting:
+		if input["shoot"] == 1:
+			weapon._shoot(delta)
+		weapon._zoom(input["zoom"] == 1, delta)
+	else:
+		weapon._zoom(false, delta)
+	if input["reload"] == 1:
+		weapon._reload()
+
+	for item: FPSWeapon in arsenal.values():
+		item._update(delta)
+	_update_position(delta)
+
+func unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventKey):
+		return
+	var key_event: InputEventKey = event as InputEventKey
+	if not key_event.pressed or key_event.echo:
+		return
+	match key_event.physical_keycode:
+		KEY_1:
+			select_weapon(0)
+		KEY_2:
+			select_weapon(1)
+		KEY_3:
+			select_weapon(2)
+
+func get_current_weapon() -> FPSWeapon:
+	if arsenal.is_empty():
+		return null
+	return arsenal.values()[current] as FPSWeapon
+
+func select_weapon(index: int) -> void:
+	if index < 0 or index >= arsenal.size() or index == current:
+		return
+	if get_current_weapon().is_busy():
+		return
+	get_current_weapon()._hide()
+	current = index
+	get_current_weapon()._draw()
+
+func _update_position(delta: float) -> void:
+	global_position = head.global_position
+	var camera_euler: Vector3 = camera.global_transform.basis.get_euler()
+	if input["zoom"] == 1:
+		global_rotation = camera_euler
+	else:
+		global_rotation.x = lerp_angle(global_rotation.x, camera_euler.x, clampf(20.0 * delta, 0.0, 1.0))
+		global_rotation.y = lerp_angle(global_rotation.y, camera_euler.y, clampf(40.0 * delta, 0.0, 1.0))
+		global_rotation.z = lerp_angle(global_rotation.z, camera_euler.z, clampf(20.0 * delta, 0.0, 1.0))

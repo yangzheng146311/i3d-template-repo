@@ -1,0 +1,8 @@
+extends Item3D
+
+@export var timer: ItemPath = ^"timer"
+
+@onready var lifetime_timer: Timer = get_item(timer) as Timer
+
+func iStart() -> void:
+	lifetime_timer.timeout.connect(queue_free)

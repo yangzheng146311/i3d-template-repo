@@ -1,0 +1,17 @@
+extends Item3D
+
+@export var ray: ItemPath = ^"ray"
+
+var ground: bool = false
+
+@onready var ground_ray: RayCast = get_item(ray) as RayCast
+
+func iStart() -> void:
+	set_update(true)
+
+func Update(_delta: float) -> void:
+	if ground or not ground_ray.is_colliding():
+		return
+	get_item("mesh").global_position = ground_ray.get_collision_point() + Vector3(0.0, 0.02, 0.0)
+	ground = true
+	set_update(false)
