@@ -1,0 +1,49 @@
+[s3_scene load_steps=4 format=3 uid="uid://dougfs0yg4i3k"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_puaib"]
+sky_top_color = Color(0.01, 0, 0.06, 1)
+sky_horizon_color = Color(0.04, 0, 0.12, 1)
+sky_energy_multiplier = 0.3
+ground_bottom_color = Color(0, 0, 0.02, 1)
+ground_horizon_color = Color(0.02, 0, 0.08, 1)
+ground_energy_multiplier = 0.2
+energy_multiplier = 0.4
+
+[sub_resource type="Sky" id="Sky_lnk17"]
+sky_material = SubResource("ProceduralSkyMaterial_puaib")
+
+[sub_resource type="Environment" id="Environment_avf1h"]
+background_mode = 2
+background_energy_multiplier = 0.2
+sky = SubResource("Sky_lnk17")
+ambient_light_source = 2
+ambient_light_color = Color(0.03, 0.01, 0.06, 1)
+ambient_light_sky_contribution = 0.15
+ambient_light_energy = 0.15
+tonemap_mode = 2
+tonemap_exposure = 0.5
+ssr_enabled = true
+ssr_fade_in = 0.5
+ssr_fade_out = 3.0
+ssao_enabled = true
+ssao_radius = 2.0
+glow_enabled = true
+glow_bloom = 0.05
+glow_blend_mode = 0
+glow_hdr_threshold = 1.2
+
+[node name="EnvSet" type="Item3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_avf1h")
+
+[node name="SunLight" type="DirectionalLight" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 10, 0)
+light_color = Color(0.7, 0.8, 1, 1)
+light_energy = 0.6
+light_specular = 0.3
+shadow_enabled = true
+shadow_bias = 0.05
+shadow_blur = 2.0
+directional_shadow_mode = 1
+directional_shadow_blend_splits = true

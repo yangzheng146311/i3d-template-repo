@@ -1,0 +1,12 @@
+[s3_scene load_steps=3 format=3 uid="uid://dmrfcc3kxa7p5"]
+
+[ext_resource type="Script" uid="uid://dpaugl66e857e" path="res://scripts/Core/SpringArmCamera.cs" id="1_wppf5"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_jm34d"]
+
+[node name="SpringArm-Camera" type="SpringArm"]
+shape = SubResource("SphereShape3D_jm34d")
+script = ExtResource("1_wppf5")
+_targetPath = ItemPath("../CenterPos")
+
+[node name="Camera" type="Camera" parent="."]

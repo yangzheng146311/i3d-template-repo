@@ -1,0 +1,6 @@
+[s3_scene load_steps=2 format=3 uid="uid://c8vqttouxgfxd"]
+
+[ext_resource type="Script" uid="uid://dn4qy1k1jp7ut" path="res://scripts/Data/SimDataService.cs" id="1_5kxeu"]
+
+[node name="SimData" type="Item"]
+script = ExtResource("1_5kxeu")

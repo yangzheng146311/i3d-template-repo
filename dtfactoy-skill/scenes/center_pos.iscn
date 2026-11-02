@@ -1,0 +1,3 @@
+[s3_scene format=3 uid="uid://8fgn31xjisov"]
+
+[node name="CenterPos" type="Item3D"]

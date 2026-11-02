@@ -1,0 +1,7 @@
+[s3_scene load_steps=2 format=3 uid="uid://cemag785cahby"]
+
+[ext_resource type="PackedScene" uid="uid://caqrpsk0hou1u" path="res://assets/厂房.fbx" id="1_64agr"]
+
+[node name="Factory" type="Item3D"]
+
+[node name="厂房" parent="." instance=ExtResource("1_64agr")]

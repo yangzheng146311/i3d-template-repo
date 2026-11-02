@@ -1,0 +1,6 @@
+[s3_scene load_steps=2 format=3 uid="uid://7dpqxd8s07sx"]
+
+[ext_resource type="Script" uid="uid://bph7flchdjxwa" path="res://scripts/Core/DeviceMarker.cs" id="1_nmjlm"]
+
+[node name="DeviceMarker" type="Item3D"]
+script = ExtResource("1_nmjlm")
